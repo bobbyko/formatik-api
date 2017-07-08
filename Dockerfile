@@ -2,7 +2,7 @@ FROM microsoft/dotnet:1.1.2-runtime
 MAINTAINER Bobby Kotzev
 
 ENV TZ=America/Los_Angeles
-ENV appDir /srv/Formatik/v0.1/API
+ENV appDir /srv/formatik/api
 
 RUN mkdir -p ${appDir}
 WORKDIR ${appDir}
