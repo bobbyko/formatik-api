@@ -1,18 +1,40 @@
 # Continous deployment script
+cd ../formatic-lib/
 git remote update
 
-LOCAL=$(git rev-parse @)
-REMOTE=$(git rev-parse @{u})
-BASE=$(git merge-base @ @{u})
+LIB_LOCAL=$(git rev-parse @)
+LIB_REMOTE=$(git rev-parse @{u})
+LIB_BASE=$(git merge-base @ @{u})
 
-if [[ $LOCAL = $REMOTE && $1 != "force" ]]; then
+cd ../formatic-test/
+git remote update
+
+TEST_LOCAL=$(git rev-parse @)
+TEST_REMOTE=$(git rev-parse @{u})
+TEST_BASE=$(git merge-base @ @{u})
+
+cd ../formatic-api/
+git remote update
+
+API_LOCAL=$(git rev-parse @)
+API_REMOTE=$(git rev-parse @{u})
+API_BASE=$(git merge-base @ @{u})
+
+if [[ $LIB_LOCAL = $LIB_REMOTE && $TEST_LOCAL = $TEST_REMOTE && $API_LOCAL = $API_REMOTE && $1 != "force" ]]; then
     echo "Up-to-date"
-elif [[ $LOCAL = $BASE || $1 == "force" ]]; then
+elif [[ $LIB_LOCAL = $LIB_BASE || $TEST_LOCAL = $TEST_BASE || $API_LOCAL = $API_BASE || $1 == "force" ]]; then
     echo "Rebuilding..."
     
+    cd ../formatic-lib/
     git pull
 
-    sudo rm -r Tests/TestResults
+    cd ../formatic-test/
+    git pull
+    
+    sudo rm -r TestResults
+
+    cd ../formatic-api/
+    git pull
 
     # Restores need to be executed in every container. 
     # Restores from prior containers or the host are not valid inside a new container
@@ -21,13 +43,13 @@ elif [[ $LOCAL = $BASE || $1 == "force" ]]; then
     echo "Testing latest source..."
     docker run \
         --rm \
-        -v ~/Formatik-v0.1:/var/Formatik-v0.1 \
-        -w /var/Formatik-v0.1 \
+        -v ~/formatik:/var/formatik \
+        -w /var/formatik \
         -c 512 \
         microsoft/dotnet:1.1.2-sdk-1.0.4 \
-        /bin/bash -c "cd Formatik; dotnet restore; cd ../Tests; dotnet restore; dotnet test -c release -l trx;LogFileName=result.trx"
+        /bin/bash -c "cd formatik-lib; dotnet restore; cd ../formatik-test; dotnet restore; dotnet test -c release -l trx;LogFileName=result.trx"
 
-    TEST=$(grep -Po "(?<=<ResultSummary outcome=\")[^\"]+" Tests/TestResults/*.trx)
+    TEST=$(grep -Po "(?<=<ResultSummary outcome=\")[^\"]+" ../formatik-test/TestResults/*.trx)
 
     if [[ $TEST == "Completed" ]]; then
         echo "...Tests Completed"
@@ -35,20 +57,20 @@ elif [[ $LOCAL = $BASE || $1 == "force" ]]; then
         echo "Building API..."
         docker run \
             --rm \
-            -v ~/Formatik-v0.1:/var/Formatik-v0.1 \
-            -w /var/Formatik-v0.1 \
+            -v ~/formatik:/var/formatik \
+            -w /var/formatik \
             -c 512 \
             microsoft/dotnet:1.1.2-sdk-1.0.4 \
-            /bin/bash -c "cd Formatik; dotnet restore; cd ../API; dotnet restore; dotnet publish -c release"
+            /bin/bash -c "cd formatik-lib; dotnet restore; cd ../formatik-api; dotnet restore; dotnet publish -c release"
 
-        sudo chmod o+rw -R API/bin
+        sudo chmod o+rw -R bin
 
         echo "...Build complete"
 
         echo "Building new API Docker image..."
-        cp Production/Dockerfile API/bin/release/netcoreapp1.1/publish/
+        cp Production/Dockerfile bin/release/netcoreapp1.1/publish/
 
-        cd API/bin/release/netcoreapp1.1/publish/
+        cd bin/release/netcoreapp1.1/publish/
         
         docker rmi octagon.formatik.api:old
         docker tag octagon.formatik.api:latest octagon.formatik.api:old
