@@ -1,19 +1,19 @@
 # Continous deployment script
-cd ../formatic-lib/
+cd ~/formatik/formatik-lib/
 git remote update
 
 LIB_LOCAL=$(git rev-parse @)
 LIB_REMOTE=$(git rev-parse @{u})
 LIB_BASE=$(git merge-base @ @{u})
 
-cd ../formatic-test/
+cd ../formatik-test/
 git remote update
 
 TEST_LOCAL=$(git rev-parse @)
 TEST_REMOTE=$(git rev-parse @{u})
 TEST_BASE=$(git merge-base @ @{u})
 
-cd ../formatic-api/
+cd ../formatik-api/
 git remote update
 
 API_LOCAL=$(git rev-parse @)
@@ -25,15 +25,15 @@ if [[ $LIB_LOCAL = $LIB_REMOTE && $TEST_LOCAL = $TEST_REMOTE && $API_LOCAL = $AP
 elif [[ $LIB_LOCAL = $LIB_BASE || $TEST_LOCAL = $TEST_BASE || $API_LOCAL = $API_BASE || $1 == "force" ]]; then
     echo "Rebuilding..."
     
-    cd ../formatic-lib/
+    cd ../formatik-lib/
     git pull
 
-    cd ../formatic-test/
+    cd ../formatik-test/
     git pull
     
     sudo rm -r TestResults
 
-    cd ../formatic-api/
+    cd ../formatik-api/
     git pull
 
     # Restores need to be executed in every container. 
