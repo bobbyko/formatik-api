@@ -14,7 +14,7 @@ using MongoDB.Driver;
 
 namespace Octagon.Formatik.API
 {
-    [Route("api/v0.1/")]
+    [Route("v1.0/")]
     [EnableCors("FullCors")]
     public class Formatik_v0_1 : Controller
     {
