@@ -85,14 +85,11 @@ elif [[ $LIB_LOCAL = $LIB_BASE || $TEST_LOCAL = $TEST_BASE || $API_LOCAL = $API_
         #     --network formatik_net \
         #     --replicas 1 \
         #     --constraint 'node.labels.api == true' \
-        #     --publish 8000:8000 \
-        #     --publish 8001:8001 \
-        #     --host mongo01:10.134.22.243 \
         #     --name api \
         #     --hostname formatik-api \
         #     octagon.formatik.api:latest
 
-        #docker run --rm -ti -p 8000:8000 --add-host mongo01:10.134.22.243 --name api-test octagon.formatik.api:latest
+        #docker run --rm -ti --name api-test octagon.formatik.api:latest
 
         docker service update \
             --image octagon.formatik.api:latest \
