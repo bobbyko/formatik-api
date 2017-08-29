@@ -47,7 +47,7 @@ elif [[ $LIB_LOCAL = $LIB_BASE || $TEST_LOCAL = $TEST_BASE || $API_LOCAL = $API_
         -w /var/formatik \
         -c 512 \
         microsoft/dotnet:1.1.2-sdk-1.0.4 \
-        /bin/bash -c "cd formatik-lib; dotnet restore; cd ../formatik-test; dotnet restore; dotnet test -c release -l trx;LogFileName=result.trx"
+        /bin/bash -c "cd formatik-lib; rm -r bin; rm -r obj; dotnet restore; cd ../formatik-test; rm -r bin; rm -r obj; dotnet restore; dotnet test -c release -l trx;LogFileName=result.trx"
 
     TEST=$(grep -Po "(?<=<ResultSummary outcome=\")[^\"]+" ../formatik-test/TestResults/*.trx)
 
@@ -61,14 +61,14 @@ elif [[ $LIB_LOCAL = $LIB_BASE || $TEST_LOCAL = $TEST_BASE || $API_LOCAL = $API_
             -w /var/formatik \
             -c 512 \
             microsoft/dotnet:1.1.2-sdk-1.0.4 \
-            /bin/bash -c "cd formatik-lib; dotnet restore; cd ../formatik-api; dotnet restore; dotnet publish -c release"
+            /bin/bash -c "cd formatik-lib; rm -r bin; rm -r obj; dotnet restore; cd ../formatik-api; rm -r bin; rm -r obj; dotnet restore; dotnet publish -c release"
 
         sudo chmod o+rw -R bin
 
         echo "...Build complete"
 
         echo "Building new API Docker image..."
-        cp Production/Dockerfile bin/release/netcoreapp1.1/publish/
+        cp Dockerfile bin/release/netcoreapp1.1/publish/
 
         cd bin/release/netcoreapp1.1/publish/
         
