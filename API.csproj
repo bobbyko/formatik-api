@@ -4,7 +4,7 @@
     <PackageId>Octagon.Formatik.API</PackageId>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <RuntimeFrameworkVersion>1.1.2</RuntimeFrameworkVersion>
-    <Version>0.1</Version>
+    <Version>1.0</Version>
     <RootNamespace>Octagon.Formatik.API</RootNamespace>
     <AssemblyName>Octagon.Formatik.API</AssemblyName>
   </PropertyGroup>
