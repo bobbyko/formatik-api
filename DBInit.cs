@@ -39,7 +39,7 @@ namespace Octagon.Formatik.API
                     new IndexKeysDefinitionBuilder<Format>()
                         .Ascending(f => f.UserId)
                         .Ascending(f => f.Formatik.Hash),
-                    new CreateIndexOptions() { Unique = true, Name = "userId_evaluation.hash", Background = true });
+                    new CreateIndexOptions() { Version = 2, Unique = true, Name = "userId_evaluation.hash", Background = true });
             }
 
             if (!formatIndexes.Any(rec => rec["name"].AsString == "userId_name"))
@@ -48,7 +48,7 @@ namespace Octagon.Formatik.API
                     new IndexKeysDefinitionBuilder<Format>()
                         .Ascending(f => f.UserId)
                         .Ascending(f => f.Name),
-                    new CreateIndexOptions() { Unique = true, Name = "userId_name", Background = true });
+                    new CreateIndexOptions() { Version = 2, Unique = true, Name = "userId_name", Background = true });
             }
 
             if (!formatIndexes.Any(rec => rec["name"].AsString == "temporary"))
@@ -58,6 +58,7 @@ namespace Octagon.Formatik.API
                         .Ascending(f => f.Temporary),
                     new CreateIndexOptions()
                     {
+                        Version = 2,
                         Sparse = true,
                         Name = "temporary",
                         Background = true,
@@ -81,6 +82,7 @@ namespace Octagon.Formatik.API
                         .Ascending(c => c.Created),
                     new CreateIndexOptions()
                     {
+                        Version = 2,
                         Name = "created",
                         Background = true,
                         ExpireAfter = TimeSpan.FromSeconds(configuration.GetValue<int>("Formatik:InputCacheDurationSec"))

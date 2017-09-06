@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
@@ -29,7 +30,7 @@ namespace Octagon.Formatik.API
             Configuration = builder.Build();
 
             // Set up MongoDB conventions
-            
+
 
             DBInit.Convention();
             DBInit.EnsureDbIndexes(this.Configuration);
@@ -78,22 +79,27 @@ namespace Octagon.Formatik.API
                 ex = context.Features.Get<IExceptionHandlerFeature>();
 
                 var logDb = Common.GetDB(Configuration.GetValue<string>("Formatik:LogsDbConnection"));
-                await logDb
-                    .GetCollection<APIException>("Exceptions")
-                    .InsertOneAsync(new APIException()
-                    {
-                        _id = errorReference,
-                        Request = $"{context.Request.Method} {(context.Request.IsHttps ? "https" : "http")}://{context.Request.Host}{context.Request.Path}{context.Request.QueryString}",
-                        Form = context.Request.Method == "POST" ?
-                                String.Join("\r\n", context.Request.Form.Select(pair => $"{pair.Key} = {pair.Value}")) :
-                                null,
-                        Headers = String.Join("\r\n", context.Request.Headers.Select(pair => $"{pair.Key} = {pair.Value}")),
-                        UserAddress = context.Connection.RemoteIpAddress.ToString(),
-                        Exception = ex.Error.Message,
-                        StackTrace = ex.Error.StackTrace,
-                        Timestamp = DateTime.Now
-                    })
-                    .ConfigureAwait(false);
+                using (var body = new StreamReader(context.Request.Body))
+                {
+                    await logDb
+                        .GetCollection<APIException>("Exceptions")
+                        .InsertOneAsync(new APIException()
+                        {
+                            _id = errorReference,
+                            Method = context.Request.Method,
+                            Request = $"{(context.Request.IsHttps ? "https" : "http")}://{context.Request.Host}{context.Request.Path}{context.Request.QueryString}",
+                            Body = context.Request.Method == "POST" ?
+                                    body.ReadToEnd() :
+                                    null,
+                            Headers = String.Join("\r\n", context.Request.Headers.Select(pair => $"{pair.Key} = {pair.Value}")),
+                            UserAddress = context.Connection.RemoteIpAddress.ToString(),
+                            Exception = ex.Error.Message,
+                            StackTrace = ex.Error.StackTrace,
+                            Timestamp = DateTime.Now,
+                            Process = System.Environment.MachineName
+                        })
+                        .ConfigureAwait(false);
+                }
             }
             catch (Exception loggingException)
             {

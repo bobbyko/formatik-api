@@ -7,8 +7,9 @@ namespace Octagon.Formatik.API
     public class APIException
     {
         public ObjectId _id { get; set; }
+        public string Method { get; set; }
         public string Request { get; set; }
-        public string Form { get; set; }
+        public string Body { get; set; }
         public string Headers { get; set; }
         public string UserAddress { get; set; }
         public string Exception { get; set; }
