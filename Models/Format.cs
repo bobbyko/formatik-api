@@ -32,7 +32,7 @@ namespace Octagon.Formatik.API
         [IgnoreDataMember]
         [BsonDefaultValue(false)]
         [BsonIgnoreIfDefault]
-        public Boolean Temporary { get; set; }
+        public DateTime Temporary { get; set; }
 
         public BsonFormatik Formatik { get; set; }
 
