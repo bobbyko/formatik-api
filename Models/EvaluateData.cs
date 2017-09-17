@@ -11,6 +11,6 @@ namespace Octagon.Formatik.API
         public string Example { get; set; }
         public string InputCacheId { get; set; }
         [DefaultValue(false)]
-        public DateTime Temporary { get; set; }
+        public Boolean Temporary { get; set; }
     }
 }

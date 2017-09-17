@@ -30,9 +30,9 @@ namespace Octagon.Formatik.API
         // This field is used in a sparse TTL index "temporary", which clears up any expired temporary documents.
         // Permenent documents (aka documents without the field temporary will not be removed)
         [IgnoreDataMember]
-        [BsonDefaultValue(false)]
+        [BsonDefaultValue(null)]
         [BsonIgnoreIfDefault]
-        public DateTime Temporary { get; set; }
+        public DateTime? Temporary { get; set; }
 
         public BsonFormatik Formatik { get; set; }
 

@@ -274,15 +274,17 @@ namespace Octagon.Formatik.API
                 addToCacheTask.Wait();
 
             // If we've reached this point there is no entry in the DB matching this format - insert one
+            var now = DateTime.Now;
+
             var newFormat = new Format()
             {
                 _id = ObjectId.GenerateNewId(),
                 UserId = user._id,
                 Name = data.Name,
-                Created = DateTime.Now,
+                Created = now,
                 Formatik = format,
                 InputCacheId = inputCacheId,
-                Temporary = data.Temporary
+                Temporary = data.Temporary ? (DateTime?)now : null
             };
 
             // no need to wait for save, assume it does
