@@ -7,6 +7,7 @@ namespace Octagon.Formatik.API
         public string FormatId { get; set; }
         public string Name { get; set; }
         public string Result { get; set; }
+        public int Processed { get; set; }
 
         [BsonIgnore]
         public string InputCacheId { get; set; }

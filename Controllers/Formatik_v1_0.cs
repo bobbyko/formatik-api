@@ -436,9 +436,10 @@ namespace Octagon.Formatik.API
 
             using (var outputStream = new MemoryStream())
             {
+                int processed;
                 using (var inputStream = new MemoryStream(Encoding.Unicode.GetBytes(data.Input)))
                 {
-                    format.Formatik.Formatik.Process(inputStream, outputStream, Encoding.Unicode, user.MaxRecordCount ?? 1000);
+                    processed = format.Formatik.Formatik.Process(inputStream, outputStream, Encoding.Unicode, user.MaxRecordCount ?? 1000);
                 }
 
                 outputStream.Seek(0, SeekOrigin.Begin);
@@ -453,6 +454,7 @@ namespace Octagon.Formatik.API
                         FormatId = _formatId.ToString(),
                         Name = format.Name,
                         Result = reader.ReadToEnd(),
+                        Processed = processed,
                         InputCacheId = inputCacheId
                     };
                 }
