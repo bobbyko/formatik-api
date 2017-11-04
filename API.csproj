@@ -2,9 +2,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <PackageId>Octagon.Formatik.API</PackageId>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
-    <RuntimeFrameworkVersion>1.1.2</RuntimeFrameworkVersion>
-    <Version>1.0</Version>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RuntimeFrameworkVersion>2.0.0</RuntimeFrameworkVersion>
+    <Version>1.1</Version>
     <RootNamespace>Octagon.Formatik.API</RootNamespace>
     <AssemblyName>Octagon.Formatik.API</AssemblyName>
   </PropertyGroup>
@@ -12,14 +12,14 @@
     <Folder Include="wwwroot\"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2"/>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.2"/>
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2"/>
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0"/>
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0"/>
     <PackageReference Include="MongoDB.Driver" Version="2.4.4"/>
     <PackageReference Include="CoreCompat.System.ComponentModel.DataAnnotations" Version="4.2.3-r7"/>
-    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="1.0.2"/>
+    <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.0.0"/>
     <PackageReference Include="System.ValueTuple" Version="4.4.0"/>
-    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="1.1.2"/>
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.0.0"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\formatik-lib\Formatik.csproj"/>

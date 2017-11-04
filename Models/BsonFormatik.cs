@@ -120,15 +120,15 @@ namespace Octagon.Formatik.API
             }
         }
 
-        public InputFormat InputFormat
+        public String InputFormat
         {
             get
             {
-                return formatik.InputFormat;
+                return formatik.InputFormat.ToString();
             }
             set
             {
-                formatik.InputFormat = value;
+                formatik.InputFormat = (InputFormat)Enum.Parse(typeof(InputFormat), value);
             }
         }
 

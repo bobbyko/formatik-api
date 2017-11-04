@@ -80,6 +80,7 @@ namespace Octagon.Formatik.API
 
         // GET api/values/5
         [HttpGet("{userId}")]
+        [EnableCors("FullCors")]
         public API.User GetUser(string userId)
         {
             if (!ObjectId.TryParse(userId, out var _id))
@@ -111,6 +112,7 @@ namespace Octagon.Formatik.API
         /// <returns></returns>
         [HttpPut("{userId}")]
         [HttpPost("{userId}/evaluate")]
+        [EnableCors("FullCors")]
         public Format Evaluate(string userId, [FromBody]EvaluateData data)
         {
             if (!ObjectId.TryParse(userId, out var _userId))
@@ -295,6 +297,7 @@ namespace Octagon.Formatik.API
         }
 
         [HttpGet("{userId}/{formatId}")]
+        [EnableCors("FullCors")]
         public Format GetFormat(string userId, string formatId)
         {
             if (!ObjectId.TryParse(userId, out var _userId))
@@ -340,6 +343,7 @@ namespace Octagon.Formatik.API
         }
 
         [HttpPost("{userId}/{formatId}")]
+        [EnableCors("FullCors")]
         public API.Process Process(string userId, string formatId, [FromBody]ProcessData data)
         {
             if (!ObjectId.TryParse(userId, out var _userId))
@@ -459,6 +463,7 @@ namespace Octagon.Formatik.API
         [HttpGet("{id}/delete/{formatId}")]
         [HttpPost("{id}/delete/{formatId}")]
         [HttpDelete("{id}/{formatId}")]
+        [EnableCors("FullCors")]
         public Delete Delete(string id, string formatId)
         {
             if (!ObjectId.TryParse(formatId, out var formatIdObj))
@@ -488,6 +493,7 @@ namespace Octagon.Formatik.API
         }
 
         [HttpGet("test-exception")]
+        [EnableCors("FullCors")]
         public void TestException(string id)
         {
             var f = new Formatik();
