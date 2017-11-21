@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,12 +17,12 @@ namespace Octagon.Formatik.API
 {
     [Route("v1.0/")]
     [EnableCors("FullCors")]
-    public class Formatik_v0_1 : Controller
+    public class Formatik_v1_0 : Controller
     {
         private readonly FormatikConfiguration configuration;
-        private readonly ILogger<Formatik_v0_1> logger;
+        private readonly ILogger<Formatik_v1_0> logger;
 
-        public Formatik_v0_1(IOptions<FormatikConfiguration> configuration, ILogger<Formatik_v0_1> logger)
+        public Formatik_v1_0(IOptions<FormatikConfiguration> configuration, ILogger<Formatik_v1_0> logger)
         {
             this.configuration = configuration.Value;
             this.logger = logger;
@@ -86,7 +87,7 @@ namespace Octagon.Formatik.API
             if (!ObjectId.TryParse(userId, out var _id))
             {
                 logger.LogInformation($"User not found or not active - {userId}");
-                return API.User.GetError("User not found or not active");
+                return API.User.GetError(ErrorCode.UserNotFound, "User not found or not active");
             }
 
             var user = GetUserAsync(new ObjectId(userId)).Result;
@@ -96,6 +97,59 @@ namespace Octagon.Formatik.API
 
             return user;
         }
+
+        [HttpPost("{userId}/upload")]
+        [EnableCors("FullCors")]
+        public InputUpload UploadInput(string userId, IFormFile file)
+        {
+            if (!ObjectId.TryParse(userId, out var _userId))
+            {
+                logger.LogInformation($"User not found or not active - {userId}");
+                return InputUpload.GetError(ErrorCode.UserNotFound, "User not found or not active");
+            }
+
+            using (var asyncQueriesCancelationTokenSource = new CancellationTokenSource())
+            {
+                var userQuery = GetUserAsync(_userId, asyncQueriesCancelationTokenSource.Token);
+
+                using (var input = new MemoryStream())
+                {
+                    file.CopyToAsync(input, asyncQueriesCancelationTokenSource.Token).Wait();
+                    //files.FirstOrDefault().CopyToAsync(input, asyncQueriesCancelationTokenSource.Token).Wait();
+
+                    var user = userQuery.Result;
+                    if (user == null)
+                    {
+                        asyncQueriesCancelationTokenSource.Cancel();
+                        logger.LogInformation($"User not found or not active - {userId}");
+                        return InputUpload.GetError(ErrorCode.UserNotFound, "User not found or not active");
+                    }
+
+                    input.Seek(0, SeekOrigin.Begin);
+
+                    using (var reader = new StreamReader(input)) 
+                    {
+                        string data = reader.ReadToEnd();
+                        var inputCacheId = Formatik.GetRepeatableBase64HashCode(data);
+                        var cacheTask = CacheInputAsync(_userId, inputCacheId, data);
+
+                        var inputDetails = Formatik.GetInputFormat(data, user.MaxRecordCount ?? 1000);
+
+                        cacheTask.Wait();
+
+                        return new InputUpload() {
+                            InputCacheId = inputCacheId,
+                            Input = data.Length > configuration.FileUploadMaxResultSize ? data.Substring(0, configuration.FileUploadMaxResultSize ?? 64000) + "..." : data,
+                            Truncated = data.Length > configuration.FileUploadMaxResultSize,
+                            InputFormat = inputDetails.InputFormat.ToString(),
+                            Size = (int)input.Length,
+                            Records = inputDetails.Records
+                        };
+                    }
+                }
+            }
+        }
+
 
         // PUT api/values
         /// <summary>
@@ -269,6 +323,8 @@ namespace Octagon.Formatik.API
                 }
 
                 existingFormat.InputCacheId = inputCacheId;
+                existingFormat.InputSize = data.Input.Length;
+                existingFormat.InputRecords = format.InputRecords;
                 return existingFormat;
             }
 
@@ -286,6 +342,8 @@ namespace Octagon.Formatik.API
                 Created = now,
                 Formatik = format,
                 InputCacheId = inputCacheId,
+                InputSize = data.Input.Length,
+                InputRecords = format.InputRecords,
                 Temporary = data.Temporary ? (DateTime?)now : null
             };
 
@@ -437,9 +495,13 @@ namespace Octagon.Formatik.API
             using (var outputStream = new MemoryStream())
             {
                 int processed;
+                int inputSize;
+                int maxRecordCount = user.MaxRecordCount ?? 1000;
+
                 using (var inputStream = new MemoryStream(Encoding.Unicode.GetBytes(data.Input)))
                 {
-                    processed = format.Formatik.Formatik.Process(inputStream, outputStream, Encoding.Unicode, user.MaxRecordCount ?? 1000);
+                    inputSize = (int)inputStream.Length;
+                    processed = format.Formatik.Formatik.Process(inputStream, outputStream, Encoding.Unicode, maxRecordCount);
                 }
 
                 outputStream.Seek(0, SeekOrigin.Begin);
@@ -454,7 +516,9 @@ namespace Octagon.Formatik.API
                         FormatId = _formatId.ToString(),
                         Name = format.Name,
                         Result = reader.ReadToEnd(),
-                        Processed = processed,
+                        InputSize = inputSize,
+                        ProcessedRecords = processed,
+                        Trunkated = processed >= maxRecordCount,
                         InputCacheId = inputCacheId
                     };
                 }

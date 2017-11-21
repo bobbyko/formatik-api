@@ -132,6 +132,31 @@ namespace Octagon.Formatik.API
             }
         }
 
+        public int InputSize
+        {
+            get
+            {
+                return formatik.InputSize;
+            }
+            set
+            {
+                formatik.InputSize = value;
+            }
+        }
+
+        public int InputRecords
+        {
+            get
+            {
+                return formatik.InputRecords;
+            }
+            set
+            {
+                formatik.InputRecords = value;
+            }
+        }
+        
+
         [BsonIgnore]
         [IgnoreDataMember]
         public Formatik Formatik { get { return formatik; }}

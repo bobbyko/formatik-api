@@ -26,6 +26,12 @@ namespace Octagon.Formatik.API
         [BsonIgnoreIfDefault]
         public DateTime? LastUpdated { get; set; }
 
+        [BsonIgnore]
+        public int InputSize { get; set; }
+
+        [BsonIgnore]
+        public int InputRecords { get; set; }
+
         // Important to NOT save null or false values for this field
         // This field is used in a sparse TTL index "temporary", which clears up any expired temporary documents.
         // Permenent documents (aka documents without the field temporary will not be removed)

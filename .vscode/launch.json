@@ -6,18 +6,21 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}/bin/Debug/netcoreapp1.1/Octagon.Formatik.API.dll",
+            "program": "${workspaceRoot}/bin/Debug/netcoreapp2.0/Octagon.Formatik.API.dll",
             "args": [],
             "cwd": "${workspaceRoot}",
             "stopAtEntry": false,
-            "console": "internalConsole"
+            "console": "internalConsole",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
         },
         {
             "name": ".NET Core Launch (web)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}/bin/Debug/netcoreapp1.1/Octagon.Formatik.API.dll",
+            "program": "${workspaceRoot}/bin/Debug/netcoreapp2.0/Octagon.Formatik.API.dll",
             "args": [],
             "cwd": "${workspaceRoot}",
             "stopAtEntry": false,

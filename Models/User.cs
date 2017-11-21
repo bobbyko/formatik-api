@@ -23,11 +23,12 @@ namespace  Octagon.Formatik.API
 
         public DateTime LastModified { get; set; }
 
-        public new static User GetError(string error)
+        public new static User GetError(ErrorCode code, string error)
         {
             return new User() {
                 Status = "ERROR",
-                Error = error
+                Error = error,
+                ErrorCode = code.ToString()
             };
         }
     }

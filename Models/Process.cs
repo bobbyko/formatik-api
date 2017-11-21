@@ -1,3 +1,4 @@
+using System;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Octagon.Formatik.API
@@ -7,7 +8,9 @@ namespace Octagon.Formatik.API
         public string FormatId { get; set; }
         public string Name { get; set; }
         public string Result { get; set; }
-        public int Processed { get; set; }
+        public int InputSize { get; set; }
+        public int ProcessedRecords { get; set; }
+        public Boolean Trunkated { get; set; }
 
         [BsonIgnore]
         public string InputCacheId { get; set; }
