@@ -47,6 +47,7 @@ namespace Octagon.Formatik.API
             services.AddResponseCompression(options =>
             {
                 options.Providers.Add<GzipCompressionProvider>();
+                options.EnableForHttps = true;
             })
             .Configure<GzipCompressionProviderOptions>(options =>
             {
