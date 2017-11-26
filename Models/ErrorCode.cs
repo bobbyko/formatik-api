@@ -10,6 +10,7 @@ namespace Octagon.Formatik.API
         MissingParameters = 5,
         InvalidInputCacheId = 6,
         InputCacheNotFound = 7,
-        InvalidFormatId = 8
+        InvalidFormatId = 8,
+        UnsupportedFormat = 9
     }
 }

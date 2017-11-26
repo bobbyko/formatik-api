@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ExcelDataReader;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -112,10 +113,10 @@ namespace Octagon.Formatik.API
             {
                 var userQuery = GetUserAsync(_userId, asyncQueriesCancelationTokenSource.Token);
 
-                using (var input = new MemoryStream())
+                var input = new MemoryStream();
+                try
                 {
                     file.CopyToAsync(input, asyncQueriesCancelationTokenSource.Token).Wait();
-                    //files.FirstOrDefault().CopyToAsync(input, asyncQueriesCancelationTokenSource.Token).Wait();
 
                     var user = userQuery.Result;
                     if (user == null)
@@ -127,17 +128,66 @@ namespace Octagon.Formatik.API
 
                     input.Seek(0, SeekOrigin.Begin);
 
-                    using (var reader = new StreamReader(input)) 
+                    // try to read as XLS and convert to CSV
+                    try
+                    {
+                        using (var reader = ExcelReaderFactory.CreateReader(input))
+                        {
+                            var csvInput = new MemoryStream();
+                            using (var writer = new StreamWriter(csvInput, Encoding.Unicode, 8192, true))
+                            {
+                                do
+                                {
+                                    if (reader.HeaderFooter != null && reader.HeaderFooter.FirstHeader != null)
+                                        writer.WriteLine(reader.HeaderFooter.FirstHeader);
+
+                                    while (reader.Read())
+                                    {
+                                        writer.WriteLine(
+                                            string.Join(",", Enumerable
+                                                .Range(0, reader.FieldCount)
+                                                .Select(i => reader.IsDBNull(i) ? "" : reader.GetValue(i).ToString())
+                                                .Select(strVal => strVal.Contains(",") ?
+                                                    $"\"{strVal}\"" :
+                                                    strVal
+                                                )
+                                            )
+                                        );
+                                    }
+                                }
+                                while (reader.NextResult());
+                            }
+
+                            csvInput.Seek(0, SeekOrigin.Begin);
+                            input.Dispose();
+                            input = csvInput;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        input.Seek(0, SeekOrigin.Begin);
+                    }
+
+                    using (var reader = new StreamReader(input))
                     {
                         string data = reader.ReadToEnd();
                         var inputCacheId = Formatik.GetRepeatableBase64HashCode(data);
                         var cacheTask = CacheInputAsync(_userId, inputCacheId, data);
 
-                        var inputDetails = Formatik.GetInputFormat(data, user.MaxRecordCount ?? 1000);
+                        (InputFormat InputFormat, int Records) inputDetails;
+                        try
+                        {
+                            inputDetails = Formatik.GetInputFormat(data, user.MaxRecordCount ?? 1000);
+                        }
+                        catch (UnsupportedFormatException)
+                        {
+                            return InputUpload.GetError(ErrorCode.UnsupportedFormat, "Unsupported Format");
+                        }
 
                         cacheTask.Wait();
 
-                        return new InputUpload() {
+                        return new InputUpload()
+                        {
                             InputCacheId = inputCacheId,
                             Input = data.Length > configuration.FileUploadMaxResultSize ? data.Substring(0, configuration.FileUploadMaxResultSize ?? 64000) + "..." : data,
                             Truncated = data.Length > configuration.FileUploadMaxResultSize,
@@ -146,6 +196,10 @@ namespace Octagon.Formatik.API
                             Records = inputDetails.Records
                         };
                     }
+                }
+                finally
+                {
+                    input.Dispose();
                 }
             }
         }

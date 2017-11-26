@@ -19,6 +19,8 @@
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.0.1"/>
     <PackageReference Include="System.ValueTuple" Version="4.4.0"/>
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.0.0"/>
+    <PackageReference Include="ExcelDataReader" Version="3.3.0"/>
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.4.0"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\formatik-lib\Formatik.csproj"/>

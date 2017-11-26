@@ -30,10 +30,10 @@ namespace Octagon.Formatik.API
             Configuration = builder.Build();
 
             // Set up MongoDB conventions
-
-
             DBInit.Convention();
             DBInit.EnsureDbIndexes(this.Configuration);
+
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
         }
 
         public IConfigurationRoot Configuration { get; }
