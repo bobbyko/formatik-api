@@ -46,7 +46,7 @@ elif [[ $LIB_LOCAL = $LIB_BASE || $TEST_LOCAL = $TEST_BASE || $API_LOCAL = $API_
         -v ~/formatik:/var/formatik \
         -w /var/formatik \
         -c 512 \
-        microsoft/dotnet:2.0.0-sdk-2.0.2 \
+        microsoft/dotnet:2.0.3-sdk \
         /bin/bash -c "cd formatik-lib; rm -r bin; rm -r obj; dotnet restore; cd ../formatik-test; rm -r bin; rm -r obj; dotnet restore; dotnet test -c release -l trx;LogFileName=result.trx"
 
     TEST=$(grep -Po "(?<=<ResultSummary outcome=\")[^\"]+" ../formatik-test/TestResults/*.trx)
@@ -60,7 +60,7 @@ elif [[ $LIB_LOCAL = $LIB_BASE || $TEST_LOCAL = $TEST_BASE || $API_LOCAL = $API_
             -v ~/formatik:/var/formatik \
             -w /var/formatik \
             -c 512 \
-            microsoft/dotnet:2.0.0-sdk-2.0.2 \
+            microsoft/dotnet:2.0.3-sdk \
             /bin/bash -c "cd formatik-lib; rm -r bin; rm -r obj; dotnet restore; cd ../formatik-api; rm -r bin; rm -r obj; dotnet restore; dotnet publish -c release"
 
         sudo chmod o+rw -R bin

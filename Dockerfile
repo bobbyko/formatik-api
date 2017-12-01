@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.0.0-runtime
+FROM microsoft/dotnet:2.0.3-runtime
 MAINTAINER Bobby Kotzev
 
 ENV TZ=America/Los_Angeles
