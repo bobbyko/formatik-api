@@ -61,7 +61,7 @@ elif [[ $LIB_LOCAL = $LIB_BASE || $TEST_LOCAL = $TEST_BASE || $API_LOCAL = $API_
             -w /var/formatik \
             -c 512 \
             microsoft/dotnet:2.0.3-sdk \
-            /bin/bash -c "cd formatik-lib; rm -r bin; rm -r obj; dotnet restore; cd ../formatik-api; rm -r bin; rm -r obj; dotnet restore; dotnet publish -c release"
+            /bin/bash -c "cd formatik-lib; rm -r bin; rm -r obj; dotnet restore; cd ../formatik-api; rm -r bin; rm -r obj; dotnet restore; dotnet publish -c release /property:PublishWithAspNetCoreTargetManifest=false"
 
         sudo chmod o+rw -R bin
 
