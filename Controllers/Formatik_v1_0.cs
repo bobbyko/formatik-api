@@ -20,10 +20,10 @@ namespace Octagon.Formatik.API
     [EnableCors("FullCors")]
     public class Formatik_v1_0 : Controller
     {
-        private readonly FormatikConfiguration configuration;
+        private readonly FormatikSettings configuration;
         private readonly ILogger<Formatik_v1_0> logger;
 
-        public Formatik_v1_0(IOptions<FormatikConfiguration> configuration, ILogger<Formatik_v1_0> logger)
+        public Formatik_v1_0(IOptions<FormatikSettings> configuration, ILogger<Formatik_v1_0> logger)
         {
             this.configuration = configuration.Value;
             this.logger = logger;

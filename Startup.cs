@@ -41,7 +41,7 @@ namespace Octagon.Formatik.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<FormatikConfiguration>(Configuration.GetSection("Formatik"));
+            services.Configure<FormatikSettings>(Configuration.GetSection("Formatik"));
 
             // set response compression
             services.AddResponseCompression(options =>

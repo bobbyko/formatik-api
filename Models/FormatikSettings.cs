@@ -1,6 +1,6 @@
 namespace Octagon.Formatik.API
 {
-    public class FormatikConfiguration
+    public class FormatikSettings
     {
         public string DbConnection { get; set; }
         public string LogsDbConnection { get; set; }
